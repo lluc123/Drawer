@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 		int i =0;
 		gBrushColor = 0x0000FF00;
 		for(i=0;i<W_width;i++) {
-			myPixels[coord(i,W_height<<1)] = gBrushColor;
+			myPixels[coord(i,W_height>>1)] = gBrushColor;
 		}
 		gBrushColor = 0x00FF0000;
 		circle tc = {{50,50},10};
