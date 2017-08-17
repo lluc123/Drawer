@@ -1,12 +1,37 @@
+//waveview.c
+/*
+
+febonachi: waveview.c
+	gcc -Wall -o febonachi waveview.c -L/usr/lib/ -lSDL2
+
+*/
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdlib.h>
 #include <math.h>
 
-#define coord(x,y) y*width+x
+#define coord(x,y) y*W_height+x
 
-const int height = 480;
-const int width = 640;
+const double pi = 3.14159265;
+
+int W_height = 480;
+int W_width = 640;
+uint32_t gBrushColor = 0;
+
+typedef struct {
+	int x;
+	int y;
+} vec2d;
+
+typedef struct {
+	vec2d c; //center
+	int r; //radius
+} circle;
+
+void drawCircle(void * pixelMap, const size_t pixelSize, const circle cir);
+void drawLine(void * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2);
+double taylorSined(double rad);
 
 int main(int argc, char* argv[])
 {
@@ -19,7 +44,7 @@ int main(int argc, char* argv[])
 	SDL_Window *screen = SDL_CreateWindow("Test",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
-			width, height,
+			W_width, W_height,
 			0);
 
 	SDL_Renderer *renderer;
@@ -28,9 +53,9 @@ int main(int argc, char* argv[])
 	SDL_Texture *sdlTexture = SDL_CreateTexture(renderer,
 						SDL_PIXELFORMAT_ARGB8888,
 						SDL_TEXTUREACCESS_STREAMING,
-						width, height);
+						W_width, W_height);
 	int quit = 0;
-	uint32_t * myPixels = malloc(width*height*sizeof(uint32_t));
+	uint32_t * myPixels = malloc(W_width*W_height*sizeof(uint32_t));
 
 	while(!quit)
 	{
@@ -51,12 +76,16 @@ int main(int argc, char* argv[])
 
 		// UPDATE
 		int i =0;
-		for(i=0;i<width;i++) {
-			myPixels[coord(i,240)] = 0x0000FF00;
+		gBrushColor = 0x0000FF00;
+		for(i=0;i<W_width;i++) {
+			myPixels[coord(i,W_height<<1)] = gBrushColor;
 		}
+		gBrushColor = 0x00FF0000;
+		circle tc = {{50,50},10};
+		drawCircle(myPixels, sizeof(uint32_t), tc );
 
 		//Change the texture to DRAW
-		SDL_UpdateTexture(sdlTexture, NULL, myPixels, 640 * sizeof (Uint32) );
+		SDL_UpdateTexture(sdlTexture, NULL, myPixels, W_width * sizeof (Uint32) );
 		//DRAW
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, sdlTexture, NULL, NULL);
@@ -64,8 +93,50 @@ int main(int argc, char* argv[])
 
 	}
 
-	free(myPixels);
+	//free(myPixels);
 	SDL_DestroyWindow(screen);
 	SDL_Quit();
 	return 0;
+}
+
+
+void drawCircle(void * pixelMap, const size_t pixelSize, const circle cir)
+{
+	vec2d p = {cir.r - 1,0};
+	int dx = 1;int dy = 1;
+	int err = dx - (radius << 1);
+
+	while(p.x >= p.y) {
+		pixelMap[pixelSize*(coord(cir.c.x+p.x,cir.c.y + p.y))] = gBrushColor;
+		pixelMap[pixelSize*(coord(cir.c.x+p.y,cir.c.y + p.x))] = gBrushColor;
+		pixelMap[pixelSize*(coord(cir.c.x-p.y,cir.c.y + p.x))] = gBrushColor;
+		pixelMap[pixelSize*(coord(cir.c.x-p.x,cir.c.y + p.y))] = gBrushColor;
+		pixelMap[pixelSize*(coord(cir.c.x-p.x,cir.c.y - p.y))] = gBrushColor;
+		pixelMap[pixelSize*(coord(cir.c.x-p.y,cir.c.y - p.x))] = gBrushColor;
+		pixelMap[pixelSize*(coord(cir.c.x+p.y,cir.c.y - p.x))] = gBrushColor;
+		pixelMap[pixelSize*(coord(cir.c.x+p.x,cir.c.y - p.y))] = gBrushColor;
+
+		if (err <= 0)
+		{
+			p.y++;
+			err += dy;
+			dy += 2;
+		}
+		if ( err > 0 )
+		{
+			p.x--;
+			dx += 2;
+			err += (-radius << 1) + dx;
+		}
+			
+	}
+}
+void drawLine(void * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2) 
+{
+
+}
+
+double taylorSined(double rad)
+{
+	return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
 }
