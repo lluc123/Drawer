@@ -13,25 +13,28 @@ febonachi: waveview.c
 
 #define coord(x,y) ((y)*W_width)+(x)
 
-const double pi = 3.14159265;
+const double pi = 3.14159265;		//value of pi
+const double pi2 = 6.28318530718; 	//The double of pi
 
-int W_height = 480;
-int W_width = 640;
-uint32_t gBrushColor = 0;
+int W_height = 480;			//Window height
+int W_width = 640;			//Window width
+uint32_t gBrushColor = 0;		//My draw function use this color to draw
 
 typedef struct {
-	int x;
-	int y;
+	int x;				//x value
+	int y;				//y value
 } vec2d;
 
 typedef struct {
-	vec2d c; //center
-	int r; //radius
+	vec2d c;			//center
+	int r;				//radius
 } circle;
 
 void drawCircle(uint32_t* pixelMap, const size_t pixelSize, const circle cir);
 void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2);
+void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero, double (*f)(double));
 double taylorSined(double rad);
+double taylorCossined(double rad);
 
 int main(int argc, char* argv[])
 {
@@ -83,6 +86,9 @@ int main(int argc, char* argv[])
 		gBrushColor = 0x00FF0000;
 		circle tc = {{199,199},100};
 		drawCircle(myPixels, sizeof(uint32_t), tc );
+		gBrushColor = 0x00FFFF00;
+		circle tc2 = {{300,300},50};
+		drawCircle(myPixels, sizeof(uint32_t), tc2 );
 
 		//Change the texture to DRAW
 		SDL_UpdateTexture(sdlTexture, NULL, myPixels, W_width * sizeof (Uint32) );
@@ -139,4 +145,10 @@ void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const
 double taylorSined(double rad)
 {
 	return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
+}
+
+double taylorCossined(double rad) 
+{
+//	return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
+	return 1 - (pow(rad,2)/2) + (pow(rad,4)/24) - (paw(rad,6)/720);
 }
