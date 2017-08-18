@@ -11,7 +11,7 @@ febonachi: waveview.c
 #include <stdlib.h>
 #include <math.h>
 
-#define coord(x,y) y*W_height+x
+#define coord(x,y) ((y)*W_width)+(x)
 
 const double pi = 3.14159265;
 
@@ -29,8 +29,8 @@ typedef struct {
 	int r; //radius
 } circle;
 
-void drawCircle(void * pixelMap, const size_t pixelSize, const circle cir);
-void drawLine(void * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2);
+void drawCircle(uint32_t* pixelMap, const size_t pixelSize, const circle cir);
+void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2);
 double taylorSined(double rad);
 
 int main(int argc, char* argv[])
@@ -78,10 +78,10 @@ int main(int argc, char* argv[])
 		int i =0;
 		gBrushColor = 0x0000FF00;
 		for(i=0;i<W_width;i++) {
-			myPixels[coord(i,W_height>>1)] = gBrushColor;
+			myPixels[coord(i,240)] = gBrushColor;
 		}
 		gBrushColor = 0x00FF0000;
-		circle tc = {{50,50},10};
+		circle tc = {{199,199},100};
 		drawCircle(myPixels, sizeof(uint32_t), tc );
 
 		//Change the texture to DRAW
@@ -100,21 +100,21 @@ int main(int argc, char* argv[])
 }
 
 
-void drawCircle(void * pixelMap, const size_t pixelSize, const circle cir)
+void drawCircle(uint32_t * pixelMap, const size_t pixelSize, const circle cir)
 {
 	vec2d p = {cir.r - 1,0};
 	int dx = 1;int dy = 1;
-	int err = dx - (radius << 1);
+	int err = dx - (cir.r << 1);
 
 	while(p.x >= p.y) {
-		pixelMap[pixelSize*(coord(cir.c.x+p.x,cir.c.y + p.y))] = gBrushColor;
-		pixelMap[pixelSize*(coord(cir.c.x+p.y,cir.c.y + p.x))] = gBrushColor;
-		pixelMap[pixelSize*(coord(cir.c.x-p.y,cir.c.y + p.x))] = gBrushColor;
-		pixelMap[pixelSize*(coord(cir.c.x-p.x,cir.c.y + p.y))] = gBrushColor;
-		pixelMap[pixelSize*(coord(cir.c.x-p.x,cir.c.y - p.y))] = gBrushColor;
-		pixelMap[pixelSize*(coord(cir.c.x-p.y,cir.c.y - p.x))] = gBrushColor;
-		pixelMap[pixelSize*(coord(cir.c.x+p.y,cir.c.y - p.x))] = gBrushColor;
-		pixelMap[pixelSize*(coord(cir.c.x+p.x,cir.c.y - p.y))] = gBrushColor;
+		pixelMap[coord(cir.c.x+p.x,cir.c.y+p.y)] = gBrushColor;
+		pixelMap[coord(cir.c.x+p.y,cir.c.y+p.x)] = gBrushColor;
+		pixelMap[coord(cir.c.x-p.y,cir.c.y+p.x)] = gBrushColor;
+		pixelMap[coord(cir.c.x-p.x,cir.c.y+p.y)] = gBrushColor;
+		pixelMap[coord(cir.c.x-p.x,cir.c.y-p.y)] = gBrushColor;
+		pixelMap[coord(cir.c.x-p.y,cir.c.y-p.x)] = gBrushColor;
+		pixelMap[coord(cir.c.x+p.y,cir.c.y-p.x)] = gBrushColor;
+		pixelMap[coord(cir.c.x+p.x,cir.c.y-p.y)] = gBrushColor;
 
 		if (err <= 0)
 		{
@@ -126,12 +126,12 @@ void drawCircle(void * pixelMap, const size_t pixelSize, const circle cir)
 		{
 			p.x--;
 			dx += 2;
-			err += (-radius << 1) + dx;
+			err += (-cir.r << 1) + dx;
 		}
 			
 	}
 }
-void drawLine(void * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2) 
+void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2) 
 {
 
 }
