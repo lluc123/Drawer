@@ -32,7 +32,8 @@ typedef struct {
 
 void drawCircle(uint32_t* pixelMap, const size_t pixelSize, const circle cir);
 void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2);
-void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero, double (*f)(double));
+void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,const double sx, const double sy, double (*f)(double));
+void protectPutPixel(uint32_t * pixelMap, const size_t pixelSize, const int x, const int y);
 double taylorSined(double rad);
 double taylorCossined(double rad);
 
@@ -83,12 +84,18 @@ int main(int argc, char* argv[])
 		for(i=0;i<W_width;i++) {
 			myPixels[coord(i,240)] = gBrushColor;
 		}
-		gBrushColor = 0x00FF0000;
-		circle tc = {{199,199},100};
-		drawCircle(myPixels, sizeof(uint32_t), tc );
+		for(i=0;i<200;i++)
+		{
+		//gBrushColor = 0x00FF0000;
+			gBrushColor = rand() % 0x01000000;
+			circle tc = {{rand()%640,rand()%480},rand()%100};
+			drawCircle(myPixels, sizeof(uint32_t), tc );
+		}
 		gBrushColor = 0x00FFFF00;
-		circle tc2 = {{300,300},50};
-		drawCircle(myPixels, sizeof(uint32_t), tc2 );
+	//	circle tc2 = {{300,300},50};
+	//	drawCircle(myPixels, sizeof(uint32_t), tc2 );
+		vec2d tp2 = {300,240};
+		drawFormula(myPixels, sizeof(uint32_t), tp2, 0.02, 0.01, taylorSined);
 
 		//Change the texture to DRAW
 		SDL_UpdateTexture(sdlTexture, NULL, myPixels, W_width * sizeof (Uint32) );
@@ -96,7 +103,7 @@ int main(int argc, char* argv[])
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, sdlTexture, NULL, NULL);
 		SDL_RenderPresent(renderer);
-
+		SDL_Delay(3000);
 	}
 
 	//free(myPixels);
@@ -113,14 +120,14 @@ void drawCircle(uint32_t * pixelMap, const size_t pixelSize, const circle cir)
 	int err = dx - (cir.r << 1);
 
 	while(p.x >= p.y) {
-		pixelMap[coord(cir.c.x+p.x,cir.c.y+p.y)] = gBrushColor;
-		pixelMap[coord(cir.c.x+p.y,cir.c.y+p.x)] = gBrushColor;
-		pixelMap[coord(cir.c.x-p.y,cir.c.y+p.x)] = gBrushColor;
-		pixelMap[coord(cir.c.x-p.x,cir.c.y+p.y)] = gBrushColor;
-		pixelMap[coord(cir.c.x-p.x,cir.c.y-p.y)] = gBrushColor;
-		pixelMap[coord(cir.c.x-p.y,cir.c.y-p.x)] = gBrushColor;
-		pixelMap[coord(cir.c.x+p.y,cir.c.y-p.x)] = gBrushColor;
-		pixelMap[coord(cir.c.x+p.x,cir.c.y-p.y)] = gBrushColor;
+		protectPutPixel(pixelMap, pixelSize, cir.c.x+p.x,cir.c.y+p.y);
+		protectPutPixel(pixelMap, pixelSize, cir.c.x+p.y,cir.c.y+p.x);
+		protectPutPixel(pixelMap, pixelSize, cir.c.x-p.y,cir.c.y+p.x);
+		protectPutPixel(pixelMap, pixelSize, cir.c.x-p.x,cir.c.y+p.y);
+		protectPutPixel(pixelMap, pixelSize, cir.c.x-p.x,cir.c.y-p.y);
+		protectPutPixel(pixelMap, pixelSize, cir.c.x-p.y,cir.c.y-p.x);
+		protectPutPixel(pixelMap, pixelSize, cir.c.x+p.y,cir.c.y-p.x);
+		protectPutPixel(pixelMap, pixelSize, cir.c.x+p.x,cir.c.y-p.y);
 
 		if (err <= 0)
 		{
@@ -150,5 +157,27 @@ double taylorSined(double rad)
 double taylorCossined(double rad) 
 {
 //	return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
-	return 1 - (pow(rad,2)/2) + (pow(rad,4)/24) - (paw(rad,6)/720);
+	return 1 - (pow(rad,2)/2) + (pow(rad,4)/24) - (pow(rad,6)/720);
 }
+
+void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,const double sx, const double sy, double (*f)(double))
+{
+	double x;
+	int i,y;
+
+	for(i=0;x<W_width;i++) {
+		x=(i - zero.x)*sx;
+		//y=(zero.y - f(x))*sy;
+		y=f(x) / sy + zero.y;
+		protectPutPixel(pixelMap,pixelSize,i,y);
+	}
+}
+
+void protectPutPixel(uint32_t * pixelMap, const size_t pixelSize, const int x, const int y)
+{
+	if(x < W_width && y < W_height && x >= 0 && y >= 0)
+	{
+		pixelMap[coord(x,y)] = gBrushColor;
+	}
+}
+
