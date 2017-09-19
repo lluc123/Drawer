@@ -146,7 +146,23 @@ void drawCircle(uint32_t * pixelMap, const size_t pixelSize, const circle cir)
 }
 void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2) 
 {
+	vec2d pen;
+	int deltaX = v2.x - v1.x;
+	int deltaY = v2.y - v1.y;
 
+	double error = 0;
+
+	double deltaError = absf(deltaY / deltaX);
+	pen.y = v1.y;
+	for(pen.x = v1.x; pen.x <= v2.x; pen.x++)
+	{
+		protectPutPixel(pixelMap, pixelSize,pen.x, pen.y);
+        	error = error + deltaError 
+        	if (error >= 0.5) {
+            		++Y;
+            		error -= 1.0
+        	}
+	}
 }
 
 double taylorSined(double rad)
