@@ -172,7 +172,17 @@ void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const
 
 double taylorSined(double rad)
 {
-	return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
+/*	if(rad>1.57 || rad<-1.57)
+		fprintf(stderr, "\rtaylorSined : %f \n", rad);*/
+	const double square = rad * rad;
+	double total = rad * square;
+	double ret = rad - total/6;
+	total = total * square;
+	ret += total/120;
+	total = total * square;
+	ret -= total/5040;
+	//return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
+	return ret;
 }
 
 double taylorCossined(double rad) 
