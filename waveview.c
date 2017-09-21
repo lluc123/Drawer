@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, sdlTexture, NULL, NULL);
 		SDL_RenderPresent(renderer);
-		SDL_Delay(3000);
+		//SDL_Delay(3000);
 	}
 
 	//free(myPixels);
