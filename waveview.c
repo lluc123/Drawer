@@ -144,14 +144,45 @@ void drawCircle(uint32_t * pixelMap, const size_t pixelSize, const circle cir)
 			
 	}
 }
+
+//http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
 void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2) 
 {
+	vec2d pen;
+	int deltaX = v2.x - v1.x;
+	int deltaY = v2.y - v1.y;
 
+	int sx = v1.x<v2.x ? 1 : -1;
+	int sy = v1.y<v2.y ? 1 : -1;
+
+	int error = (deltaX>deltaY ? deltaX : -deltaY)/2;
+	int e2;
+
+	pen.y = v1.y;
+	pen.x = v1.x;
+	for(;;)
+	{
+		protectPutPixel(pixelMap, pixelSize,pen.x, pen.y);
+		if (pen.x == v2.x && pen.y == v2.y) { break; }
+		e2 = error;
+		if(e2 > -deltaX) { err -= deltaY; pen.x += sx; }
+		if(e2 < deltaY) { err -= deltaX; pen.y += sy; }
+	}
 }
 
 double taylorSined(double rad)
 {
-	return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
+/*	if(rad>1.57 || rad<-1.57)
+		fprintf(stderr, "\rtaylorSined : %f \n", rad);*/
+	const double square = rad * rad;
+	double total = rad * square;
+	double ret = rad - total/6;
+	total = total * square;
+	ret += total/120;
+	total = total * square;
+	ret -= total/5040;
+	//return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
+	return ret;
 }
 
 double taylorCossined(double rad) 
