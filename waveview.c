@@ -80,10 +80,6 @@ int main(int argc, char* argv[])
 
 		// UPDATE
 		int i =0;
-		gBrushColor = 0x0000FF00;
-		for(i=0;i<W_width;i++) {
-			myPixels[coord(i,240)] = gBrushColor;
-		}
 		/*for(i=0;i<200;i++)
 		{
 		//gBrushColor = 0x00FF0000;
@@ -94,10 +90,15 @@ int main(int argc, char* argv[])
 		gBrushColor = 0x00FFFF00;
 	//	circle tc2 = {{300,300},50};
 	//	drawCircle(myPixels, sizeof(uint32_t), tc2 );
+		vec2d tp0 = {0,240};
 		vec2d tp2 = {300,240};
-		vec2d tp1 = {400,140};
-		//drawFormula(myPixels, sizeof(uint32_t), tp2, 0.02, 0.01, taylorSined);
-		drawLine(myPixels, sizeof(uint32_t), tp1, tp2);
+		vec2d tp1 = {640,240};
+		vec2d tp3 = {300,0};
+		vec2d tp4 = {300,480};
+		drawFormula(myPixels, sizeof(uint32_t), tp2, 0.02, 0.01, taylorSined);
+		gBrushColor = 0x00FF5500;
+		drawLine(myPixels, sizeof(uint32_t), tp0, tp1);
+		drawLine(myPixels, sizeof(uint32_t), tp3, tp4);
 
 		//Change the texture to DRAW
 		SDL_UpdateTexture(sdlTexture, NULL, myPixels, W_width * sizeof (Uint32) );
@@ -197,13 +198,18 @@ double taylorCossined(double rad)
 void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,const double sx, const double sy, double (*f)(double))
 {
 	double x;
-	int i,y;
-
-	for(i=0;x<W_width;i++) {
-		x=(i - zero.x)*sx;
+	vec2d last, cur;
+	last.x=0;
+	x=(last.x - zero.x)*sx;
+	last.y=f(x) / sy + zero.y;
+	for(cur.x=5;cur.x<W_width;cur.x+=25) {
+		x=(cur.x - zero.x)*sx;
 		//y=(zero.y - f(x))*sy;
-		y=f(x) / sy + zero.y;
-		protectPutPixel(pixelMap,pixelSize,i,y);
+		cur.y=f(x) / sy + zero.y;
+		
+		//protectPutPixel(pixelMap,pixelSize,i,y);
+		drawLine(pixelMap,pixelSize,last,cur);	
+		last = cur;
 	}
 }
 
