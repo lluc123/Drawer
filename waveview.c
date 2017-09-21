@@ -84,18 +84,20 @@ int main(int argc, char* argv[])
 		for(i=0;i<W_width;i++) {
 			myPixels[coord(i,240)] = gBrushColor;
 		}
-		for(i=0;i<200;i++)
+		/*for(i=0;i<200;i++)
 		{
 		//gBrushColor = 0x00FF0000;
 			gBrushColor = rand() % 0x01000000;
 			circle tc = {{rand()%640,rand()%480},rand()%100};
 			drawCircle(myPixels, sizeof(uint32_t), tc );
-		}
+		}*/
 		gBrushColor = 0x00FFFF00;
 	//	circle tc2 = {{300,300},50};
 	//	drawCircle(myPixels, sizeof(uint32_t), tc2 );
 		vec2d tp2 = {300,240};
-		drawFormula(myPixels, sizeof(uint32_t), tp2, 0.02, 0.01, taylorSined);
+		vec2d tp1 = {400,140};
+		//drawFormula(myPixels, sizeof(uint32_t), tp2, 0.02, 0.01, taylorSined);
+		drawLine(myPixels, sizeof(uint32_t), tp1, tp2);
 
 		//Change the texture to DRAW
 		SDL_UpdateTexture(sdlTexture, NULL, myPixels, W_width * sizeof (Uint32) );
@@ -103,7 +105,7 @@ int main(int argc, char* argv[])
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, sdlTexture, NULL, NULL);
 		SDL_RenderPresent(renderer);
-		//SDL_Delay(3000);
+//		SDL_Delay(3000);
 	}
 
 	//free(myPixels);
@@ -149,24 +151,25 @@ void drawCircle(uint32_t * pixelMap, const size_t pixelSize, const circle cir)
 void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2) 
 {
 	vec2d pen;
-	int deltaX = v2.x - v1.x;
-	int deltaY = v2.y - v1.y;
+	int deltaX = abs(v2.x - v1.x);
+	int deltaY = abs(v2.y - v1.y);
 
 	int sx = v1.x<v2.x ? 1 : -1;
 	int sy = v1.y<v2.y ? 1 : -1;
 
-	int error = (deltaX>deltaY ? deltaX : -deltaY)/2;
+	int err = (deltaX>deltaY ? deltaX : -deltaY)/2;
 	int e2;
 
 	pen.y = v1.y;
 	pen.x = v1.x;
 	for(;;)
 	{
+		//printf("%d %d %d %d\n",pen.x, pen.y, v2.x, v2.y);
 		protectPutPixel(pixelMap, pixelSize,pen.x, pen.y);
 		if (pen.x == v2.x && pen.y == v2.y) { break; }
-		e2 = error;
+		e2 = err;
 		if(e2 > -deltaX) { err -= deltaY; pen.x += sx; }
-		if(e2 < deltaY) { err -= deltaX; pen.y += sy; }
+		if(e2 < deltaY) { err += deltaX; pen.y += sy; }
 	}
 }
 
