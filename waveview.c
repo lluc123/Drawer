@@ -144,24 +144,29 @@ void drawCircle(uint32_t * pixelMap, const size_t pixelSize, const circle cir)
 			
 	}
 }
+
+//http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
 void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2) 
 {
 	vec2d pen;
 	int deltaX = v2.x - v1.x;
 	int deltaY = v2.y - v1.y;
 
-	double error = 0;
+	int sx = v1.x<v2.x ? 1 : -1;
+	int sy = v1.y<v2.y ? 1 : -1;
 
-	double deltaError = absf(deltaY / deltaX);
+	int error = (deltaX>deltaY ? deltaX : -deltaY)/2;
+	int e2;
+
 	pen.y = v1.y;
-	for(pen.x = v1.x; pen.x <= v2.x; pen.x++)
+	pen.x = v1.x;
+	for(;;)
 	{
 		protectPutPixel(pixelMap, pixelSize,pen.x, pen.y);
-        	error = error + deltaError 
-        	if (error >= 0.5) {
-            		++Y;
-            		error -= 1.0
-        	}
+		if (pen.x == v2.x && pen.y == v2.y) { break; }
+		e2 = error;
+		if(e2 > -deltaX) { err -= deltaY; pen.x += sx; }
+		if(e2 < deltaY) { err -= deltaX; pen.y += sy; }
 	}
 }
 
