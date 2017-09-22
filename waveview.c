@@ -96,6 +96,8 @@ int main(int argc, char* argv[])
 		vec2d tp3 = {300,0};
 		vec2d tp4 = {300,480};
 		drawFormula(myPixels, sizeof(uint32_t), tp2, 0.02, 0.01, taylorSined);
+		gBrushColor = 0x0000FF55;
+		drawFormula(myPixels, sizeof(uint32_t), tp2, 0.02, 0.01, sin);
 		gBrushColor = 0x00FF5500;
 		drawLine(myPixels, sizeof(uint32_t), tp0, tp1);
 		drawLine(myPixels, sizeof(uint32_t), tp3, tp4);
