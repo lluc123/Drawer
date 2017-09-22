@@ -185,13 +185,14 @@ double taylorSined(double rad)
 {
 /*	if(rad>1.57 || rad<-1.57)
 		fprintf(stderr, "\rtaylorSined : %f \n", rad);*/
+	const double reverse[3] = [1/6,1/120,1/5040];
 	const double square = rad * rad;
 	double total = rad * square;
-	double ret = rad - total/6;
+	double ret = rad - total*reverse[0];
 	total = total * square;
-	ret += total/120;
+	ret += total*reverse[1];
 	total = total * square;
-	ret -= total/5040;
+	ret -= total*reverse[2];
 	//return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
 	return ret;
 }
