@@ -37,6 +37,10 @@ void protectPutPixel(uint32_t * pixelMap, const size_t pixelSize, const int x, c
 double taylorSined(double rad);
 double taylorCossined(double rad);
 
+void clear_map(uint32_t * pixelMap) {
+	memset(pixelMap,0,W_width*W_height*sizeof(uint32_t));
+}
+
 int main(int argc, char* argv[])
 {
 	//Argument handling
@@ -77,6 +81,7 @@ int main(int argc, char* argv[])
 				
 			}
 		}
+		clear_map(myPixels);
 
 		// UPDATE
 		int i =0;
