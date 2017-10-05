@@ -189,9 +189,9 @@ double taylorSined(double rad)
 	const double square = rad * rad;
 	double total = rad * square;
 	double ret = rad - total*reverse[0];
-	total = total * square;
+	total *= square;
 	ret += total*reverse[1];
-	total = total * square;
+	total *= square;
 	ret -= total*reverse[2];
 	//return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
 	return ret;
