@@ -7,7 +7,7 @@ febonachi: waveview.c
 */
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+//#include <SDL2/SDL_ttf.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -100,11 +100,11 @@ int main(int argc, char* argv[])
 		vec2d tp1 = {640,240};
 		vec2d tp3 = {300,0};
 		vec2d tp4 = {300,480};
-		drawFormula(myPixels, sizeof(uint32_t),(struct vec2d) {300,240}, 0.02, 0.01, taylorSined);
+		drawFormula(myPixels, sizeof(uint32_t),(vec2d) {300,240}, 0.02, 0.01, taylorSined);
 		gBrushColor = 0x0000FF55;
-		drawFormula(myPixels, sizeof(uint32_t), (struct vec2d) {300,240}, 0.02, 0.01, sin);
+		drawFormula(myPixels, sizeof(uint32_t), (vec2d) {300,240}, 0.02, 0.01, sin);
 		gBrushColor = 0x00FF5500;
-		drawLine(myPixels, sizeof(uint32_t), (struct vec2d) {0,240}, tp1);
+		drawLine(myPixels, sizeof(uint32_t), (vec2d) {0,240}, tp1);
 		drawLine(myPixels, sizeof(uint32_t), tp3, tp4);
 
 		//Change the texture to DRAW
@@ -185,7 +185,7 @@ double taylorSined(double rad)
 {
 /*	if(rad>1.57 || rad<-1.57)
 		fprintf(stderr, "\rtaylorSined : %f \n", rad);*/
-	const double reverse[3] = [1/6,1/120,1/5040];
+	const double reverse[3] = {(1.0/6.0),(1.0/120.0),(1.0/5040.0)};
 	const double square = rad * rad;
 	double total = rad * square;
 	double ret = rad - total*reverse[0];
