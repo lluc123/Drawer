@@ -30,6 +30,7 @@ typedef struct {
 	int r;				//radius
 } circle;
 
+#define _V2D(x,y) (vec2d) {x,y}
 void drawCircle(uint32_t* pixelMap, const size_t pixelSize, const circle cir);
 void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2);
 void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,const double sx, const double sy, double (*f)(double));
@@ -104,7 +105,7 @@ int main(int argc, char* argv[])
 		gBrushColor = 0x0000FF55;
 		drawFormula(myPixels, sizeof(uint32_t), (vec2d) {300,240}, 0.02, 0.01, sin);
 		gBrushColor = 0x00FF5500;
-		drawLine(myPixels, sizeof(uint32_t), (vec2d) {0,240}, tp1);
+		drawLine(myPixels, sizeof(uint32_t), _V2D(0,240), tp1);
 		drawLine(myPixels, sizeof(uint32_t), tp3, tp4);
 
 		//Change the texture to DRAW
@@ -210,7 +211,8 @@ void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,c
 	last.x=0;
 	x=(last.x - zero.x)*sx;
 	last.y=f(x) / sy + zero.y;
-	for(cur.x=5;cur.x<W_width;cur.x+=25) {
+	const int increment = 5;
+	for(cur.x=5;cur.x<W_width;cur.x+=increment) {
 		x=(cur.x - zero.x)*sx;
 		//y=(zero.y - f(x))*sy;
 		cur.y=f(x) / sy + zero.y;
