@@ -96,17 +96,12 @@ int main(int argc, char* argv[])
 		gBrushColor = 0x00FFFF00;
 	//	circle tc2 = {{300,300},50};
 	//	drawCircle(myPixels, sizeof(uint32_t), tc2 );
-		vec2d tp0 = {0,240};
-		vec2d tp2 = {300,240};
-		vec2d tp1 = {640,240};
-		vec2d tp3 = {300,0};
-		vec2d tp4 = {300,480};
-		drawFormula(myPixels, sizeof(uint32_t),(vec2d) {300,240}, 0.02, 0.01, taylorSined);
+		drawFormula(myPixels, sizeof(uint32_t),_V2D(300,240), 0.02, 0.01, taylorSined);
 		gBrushColor = 0x0000FF55;
-		drawFormula(myPixels, sizeof(uint32_t), (vec2d) {300,240}, 0.02, 0.01, sin);
+		drawFormula(myPixels, sizeof(uint32_t), _V2D(300,240), 0.02, 0.01, sin);
 		gBrushColor = 0x00FF5500;
-		drawLine(myPixels, sizeof(uint32_t), _V2D(0,240), tp1);
-		drawLine(myPixels, sizeof(uint32_t), tp3, tp4);
+		drawLine(myPixels, sizeof(uint32_t), _V2D(0,240), _V2D(640,240));
+		drawLine(myPixels, sizeof(uint32_t), _V2D(300,0), _V2D(300,480));
 
 		//Change the texture to DRAW
 		SDL_UpdateTexture(sdlTexture, NULL, myPixels, W_width * sizeof (Uint32) );
