@@ -16,9 +16,15 @@ febonachi: waveview.c
 const double pi = 3.14159265;		//value of pi
 const double pi2 = 6.28318530718; 	//The double of pi
 
-int W_height = 480;			//Window height
-int W_width = 640;			//Window width
+const int W_height = 480;			//Window height
+const int W_width = 640;			//Window width
 uint32_t gBrushColor = 0;		//My draw function use this color to draw
+
+typedef struct {
+	int x;				//x value
+	int y;				//y value
+	int z;				//z value
+} vec3d;
 
 typedef struct {
 	int x;				//x value
@@ -96,9 +102,9 @@ int main(int argc, char* argv[])
 		gBrushColor = 0x00FFFF00;
 	//	circle tc2 = {{300,300},50};
 	//	drawCircle(myPixels, sizeof(uint32_t), tc2 );
-		drawFormula(myPixels, sizeof(uint32_t),_V2D(300,240), 0.02, 0.01, taylorSined);
+		drawFormula(myPixels, sizeof(uint32_t),_V2D(300,240), 0.01, 0.005, taylorSined);
 		gBrushColor = 0x0000FF55;
-		drawFormula(myPixels, sizeof(uint32_t), _V2D(300,240), 0.02, 0.01, sin);
+		drawFormula(myPixels, sizeof(uint32_t), _V2D(300,240), 0.01, 0.005, sin);
 		gBrushColor = 0x00FF5500;
 		drawLine(myPixels, sizeof(uint32_t), _V2D(0,240), _V2D(640,240));
 		drawLine(myPixels, sizeof(uint32_t), _V2D(300,0), _V2D(300,480));
@@ -177,11 +183,37 @@ void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const
 	}
 }
 
+//http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
+void fillTriange(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2, const vec2d v3) 
+{
+	vec2d pen1;
+	int deltaX = abs(v2.x - v1.x);
+	int deltaY = abs(v2.y - v1.y);
+
+	int sx = v1.x<v2.x ? 1 : -1;
+	int sy = v1.y<v2.y ? 1 : -1;
+
+	int err = (deltaX>deltaY ? deltaX : -deltaY)/2;
+	int e2;
+
+	pen1.y = v1.y;
+	pen1.x = v1.x;
+	for(;;)
+	{
+		//printf("%d %d %d %d\n",pen.x, pen.y, v2.x, v2.y);
+		protectPutPixel(pixelMap, pixelSize,pen1.x, pen1.y);
+		if (pen1.x == v2.x && pen.y == v2.y) { break; }
+		e2 = err;
+		if(e2 > -deltaX) { err -= deltaY; pen1.x += sx; }
+		if(e2 < deltaY) { err += deltaX; pen1.y += sy; }
+	}
+}
+
 double taylorSined(double rad)
 {
 /*	if(rad>1.57 || rad<-1.57)
 		fprintf(stderr, "\rtaylorSined : %f \n", rad);*/
-	const double reverse[3] = {(1.0/6.0),(1.0/120.0),(1.0/5040.0)};
+	const double reverse[5] = {(1.0/6.0),(1.0/120.0),(1.0/5040.0),(1.0/362880.0),(1.0/39916800.0)};
 	const double square = rad * rad;
 	double total = rad * square;
 	double ret = rad - total*reverse[0];
@@ -189,7 +221,10 @@ double taylorSined(double rad)
 	ret += total*reverse[1];
 	total *= square;
 	ret -= total*reverse[2];
-	//return rad - (pow(rad,3)/6) + (pow(rad,5)/120) - (pow(rad,7)/5040);
+	total *= square;
+	ret += total*reverse[3];
+//	total *= square;
+//	ret -= total*reverse[4];
 	return ret;
 }
 
@@ -218,6 +253,7 @@ void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,c
 	}
 }
 
+//Sanitize draw function
 void protectPutPixel(uint32_t * pixelMap, const size_t pixelSize, const int x, const int y)
 {
 	if(x < W_width && y < W_height && x >= 0 && y >= 0)
