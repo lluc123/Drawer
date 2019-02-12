@@ -182,32 +182,55 @@ void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const
 		if(e2 < deltaY) { err += deltaX; pen.y += sy; }
 	}
 }
-
-//http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
-void fillTriange(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2, const vec2d v3) 
+void drawTriangle(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2, const vec2d v3) 
 {
-	vec2d pen1;
+	drawLine(pixelMap, pixelSize, v1, v2);
+	drawLine(pixelMap, pixelSize, v3, v2);
+	drawLine(pixelMap, pixelSize, v1, v3);
+}
+//http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
+void fillTriangle(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2, const vec2d v3) 
+{
+	vec2d pen1, pen2;
+	vec2d* obj1, obj2;
+	obj1 = &v2;
+	obj2 = &v3;
+
 	int deltaX = abs(v2.x - v1.x);
 	int deltaY = abs(v2.y - v1.y);
+	int deltaX2 = abs(v3.x - v1.x);
+	int deltaY2 = abs(v3.y - v1.y);
 
 	int sx = v1.x<v2.x ? 1 : -1;
 	int sy = v1.y<v2.y ? 1 : -1;
+	int sx2 = v1.x<v3.x ? 1 : -1;
+	int sy2 = v1.y<v3.y ? 1 : -1;
 
 	int err = (deltaX>deltaY ? deltaX : -deltaY)/2;
+	int err2 = (deltaX2>deltaY2 ? deltaX2 : -deltaY2)/2;
 	int e2;
 
 	pen1.y = v1.y;
 	pen1.x = v1.x;
+
 	for(;;)
 	{
 		//printf("%d %d %d %d\n",pen.x, pen.y, v2.x, v2.y);
 		protectPutPixel(pixelMap, pixelSize,pen1.x, pen1.y);
-		if (pen1.x == v2.x && pen.y == v2.y) { break; }
+		if (pen1.x == obj1->x && pen.y == obj1->y) { break; }
 		e2 = err;
 		if(e2 > -deltaX) { err -= deltaY; pen1.x += sx; }
-		if(e2 < deltaY) { err += deltaX; pen1.y += sy; }
+		if(e2 < deltaY) { 
+			err += deltaX; 
+			pen1.y += sy; 
+			for(;;) {
+
+			}
+		}
 	}
 }
+
+
 
 double taylorSined(double rad)
 {
