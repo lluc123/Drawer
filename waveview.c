@@ -37,13 +37,13 @@ typedef struct {
 } circle;
 
 #define _V2D(x,y) (vec2d) {x,y}
-void drawCircle(uint32_t* pixelMap, const size_t pixelSize, const circle cir);
-void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2);
-void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,const double sx, const double sy, double (*f)(double));
-void protectPutPixel(uint32_t * pixelMap, const size_t pixelSize, const int x, const int y);
+void drawCircle(uint32_t* pixelMap,  const circle cir);
+void drawLine(uint32_t * pixelMap,  const vec2d v1, const vec2d v2);
+void drawFormula(uint32_t * pixelMap,  const vec2d zero,const double sx, const double sy, double (*f)(double));
+void protectPutPixel(uint32_t * pixelMap,  const int x, const int y);
 double taylorSined(double rad);
 double taylorCossined(double rad);
-void fillTriangle(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2, const vec2d v3);
+void fillTriangle(uint32_t * pixelMap,  const vec2d v1, const vec2d v2, const vec2d v3);
 
 void clear_map(uint32_t * pixelMap) {
 	memset(pixelMap,0,W_width*W_height*sizeof(uint32_t));
@@ -113,7 +113,8 @@ int main(int argc, char* argv[])
 		*/
 		gBrushColor = 0x00FF5500;
 
-		fillTriangle(myPixels, sizeof(uint32_t), _V2D(5,10), _V2D(100,10), _V2D(5,100));
+		fillTriangle(myPixels,  _V2D(5,10), _V2D(100,10), _V2D(5,100));
+		fillTriangle(myPixels,  _V2D(150,150), _V2D(100,10), _V2D(5,100));
 
 		//Change the texture to DRAW
 		SDL_UpdateTexture(sdlTexture, NULL, myPixels, W_width * sizeof (Uint32) );
@@ -131,21 +132,21 @@ int main(int argc, char* argv[])
 }
 
 
-void drawCircle(uint32_t * pixelMap, const size_t pixelSize, const circle cir)
+void drawCircle(uint32_t * pixelMap,  const circle cir)
 {
 	vec2d p = {cir.r - 1,0};
 	int dx = 1;int dy = 1;
 	int err = dx - (cir.r << 1);
 
 	while(p.x >= p.y) {
-		protectPutPixel(pixelMap, pixelSize, cir.c.x+p.x,cir.c.y+p.y);
-		protectPutPixel(pixelMap, pixelSize, cir.c.x+p.y,cir.c.y+p.x);
-		protectPutPixel(pixelMap, pixelSize, cir.c.x-p.y,cir.c.y+p.x);
-		protectPutPixel(pixelMap, pixelSize, cir.c.x-p.x,cir.c.y+p.y);
-		protectPutPixel(pixelMap, pixelSize, cir.c.x-p.x,cir.c.y-p.y);
-		protectPutPixel(pixelMap, pixelSize, cir.c.x-p.y,cir.c.y-p.x);
-		protectPutPixel(pixelMap, pixelSize, cir.c.x+p.y,cir.c.y-p.x);
-		protectPutPixel(pixelMap, pixelSize, cir.c.x+p.x,cir.c.y-p.y);
+		protectPutPixel(pixelMap,  cir.c.x+p.x,cir.c.y+p.y);
+		protectPutPixel(pixelMap,  cir.c.x+p.y,cir.c.y+p.x);
+		protectPutPixel(pixelMap,  cir.c.x-p.y,cir.c.y+p.x);
+		protectPutPixel(pixelMap,  cir.c.x-p.x,cir.c.y+p.y);
+		protectPutPixel(pixelMap,  cir.c.x-p.x,cir.c.y-p.y);
+		protectPutPixel(pixelMap,  cir.c.x-p.y,cir.c.y-p.x);
+		protectPutPixel(pixelMap,  cir.c.x+p.y,cir.c.y-p.x);
+		protectPutPixel(pixelMap,  cir.c.x+p.x,cir.c.y-p.y);
 
 		if (err <= 0)
 		{
@@ -164,7 +165,7 @@ void drawCircle(uint32_t * pixelMap, const size_t pixelSize, const circle cir)
 }
 
 //http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
-void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2) 
+void drawLine(uint32_t * pixelMap,  const vec2d v1, const vec2d v2) 
 {
 	vec2d pen;
 	int deltaX = abs(v2.x - v1.x);
@@ -181,18 +182,18 @@ void drawLine(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const
 	for(;;)
 	{
 		//printf("%d %d %d %d\n",pen.x, pen.y, v2.x, v2.y);
-		protectPutPixel(pixelMap, pixelSize,pen.x, pen.y);
+		protectPutPixel(pixelMap, pen.x, pen.y);
 		if (pen.x == v2.x && pen.y == v2.y) { break; }
 		e2 = err;
 		if(e2 > -deltaX) { err -= deltaY; pen.x += sx; }
 		if(e2 < deltaY) { err += deltaX; pen.y += sy; }
 	}
 }
-void drawTriangle(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2, const vec2d v3) 
+void drawTriangle(uint32_t * pixelMap,  const vec2d v1, const vec2d v2, const vec2d v3) 
 {
-	drawLine(pixelMap, pixelSize, v1, v2);
-	drawLine(pixelMap, pixelSize, v3, v2);
-	drawLine(pixelMap, pixelSize, v1, v3);
+	drawLine(pixelMap,  v1, v2);
+	drawLine(pixelMap,  v3, v2);
+	drawLine(pixelMap,  v1, v3);
 }
 
 void horizontalLine(uint32_t * pixelMap,int y, int x1, int x2)
@@ -206,11 +207,12 @@ void horizontalLine(uint32_t * pixelMap,int y, int x1, int x2)
 	}
 	pen = pixelMap+coord(x1,y);
 	//printf("Horizontal Line (x1, x2, y) : %d %d %d \n",x1, x2, y);
-	for(int i = (x1 > 0 ? x1 : 0);i <= (x2 < W_width ? x2 : W_width-1);i++)
+	const int min = (x2 < W_width ? x2 : W_width-1);
+	for(int i = (x1 > 0 ? x1 : 0);i <= min;i++)
 	{*pen = gBrushColor;pen++;}
 }
 //http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C
-void fillTriangle(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, const vec2d v2, const vec2d v3) 
+void fillTriangle(uint32_t * pixelMap,  const vec2d v1, const vec2d v2, const vec2d v3) 
 {
 	vec2d pen1, pen2;
 	const vec2d *obj1, *obj2, *high, *t;
@@ -272,7 +274,7 @@ void fillTriangle(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, c
 			sy = pen1.y < obj1->y ? 1 : -1;
 			err = (deltaX>deltaY ? deltaX : -deltaY)/2;
 	       	}
-		protectPutPixel(pixelMap, pixelSize,pen1.x, pen1.y);
+		protectPutPixel(pixelMap, pen1.x, pen1.y);
 		e2 = err;
 		if(e2 > -deltaX) { err -= deltaY; pen1.x += sx; }
 		if(e2 < deltaY) { 
@@ -287,7 +289,7 @@ void fillTriangle(uint32_t * pixelMap, const size_t pixelSize, const vec2d v1, c
 					horizontalLine(pixelMap, pen1.y, pen1.x, pen2.x);
 					break;
 			       	}
-				protectPutPixel(pixelMap, pixelSize,pen2.x, pen2.y);
+				protectPutPixel(pixelMap, pen2.x, pen2.y);
 				e2 = err2;
 				if(e2 > -deltaX2) { err2 -= deltaY2; pen2.x += sx2; }
 				if(e2 < deltaY2) { 
@@ -329,7 +331,7 @@ double taylorCossined(double rad)
 	return 1 - (pow(rad,2)/2) + (pow(rad,4)/24) - (pow(rad,6)/720);
 }
 
-void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,const double sx, const double sy, double (*f)(double))
+void drawFormula(uint32_t * pixelMap,  const vec2d zero,const double sx, const double sy, double (*f)(double))
 {
 	double x;
 	vec2d last, cur;
@@ -343,13 +345,13 @@ void drawFormula(uint32_t * pixelMap, const size_t pixelSize, const vec2d zero,c
 		cur.y=f(x) / sy + zero.y;
 		
 		//protectPutPixel(pixelMap,pixelSize,i,y);
-		drawLine(pixelMap,pixelSize,last,cur);	
+		drawLine(pixelMap,last,cur);	
 		last = cur;
 	}
 }
 
 //Sanitize draw function
-void protectPutPixel(uint32_t * pixelMap, const size_t pixelSize, const int x, const int y)
+void protectPutPixel(uint32_t * pixelMap, const int x, const int y)
 {
 	if(x < W_width && y < W_height && x >= 0 && y >= 0)
 	{
